@@ -1,0 +1,192 @@
+<Window x:Class="Control.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Control.Wpf"
+        Title="Equipment Control Console" Height="400" Width="500"
+        Background="#F5F5F5" WindowStartupLocation="CenterScreen">
+  
+  <Window.Resources>
+    <local:StatusToColorConverter x:Key="StatusToColorConverter"/>
+    
+    <Style x:Key="ModernButton" TargetType="Button">
+      <Setter Property="Background" Value="#2196F3"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="16,8"/>
+      <Setter Property="Margin" Value="4"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border Background="{TemplateBinding Background}" 
+                    CornerRadius="4" 
+                    Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#1976D2"/>
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="#1565C0"/>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="#BDBDBD"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+      <Setter Property="Background" Value="#F44336"/>
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Background" Value="#D32F2F"/>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Setter Property="Background" Value="#C62828"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+    
+    <Style x:Key="StatusText" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="18"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Margin" Value="0,4"/>
+    </Style>
+    
+    <Style x:Key="LabelText" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="#424242"/>
+      <Setter Property="Margin" Value="0,8,0,4"/>
+    </Style>
+    
+    <Style x:Key="ModernTextBox" TargetType="TextBox">
+      <Setter Property="Padding" Value="8"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="#BDBDBD"/>
+      <Setter Property="Background" Value="White"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="TextBox">
+            <Border Background="{TemplateBinding Background}" 
+                    BorderBrush="{TemplateBinding BorderBrush}" 
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="4">
+              <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsFocused" Value="True">
+                <Setter Property="BorderBrush" Value="#2196F3"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Window.Resources>
+
+  <Grid Margin="20">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    
+    <!-- Header -->
+    <TextBlock Grid.Row="0" Text="Equipment Control Console" 
+               FontSize="24" FontWeight="Bold" 
+               Foreground="#1976D2" 
+               HorizontalAlignment="Center" 
+               Margin="0,0,0,20"/>
+    
+    <!-- Status Section -->
+    <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+      <StackPanel>
+        <TextBlock Text="System Status" Style="{StaticResource LabelText}"/>
+        <TextBlock AutomationProperties.AutomationId="StatusText" 
+                   Text="{Binding Status}" 
+                   Style="{StaticResource StatusText}"
+                   Foreground="{Binding Status, Converter={StaticResource StatusToColorConverter}}"/>
+      </StackPanel>
+    </Border>
+    
+    <!-- Speed Control Section -->
+    <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+      <StackPanel>
+        <TextBlock Text="Speed Control" Style="{StaticResource LabelText}"/>
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="Speed:" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+          <TextBox Width="80" Height="32" 
+                   Text="{Binding SpeedText, UpdateSourceTrigger=PropertyChanged}" 
+                   Style="{StaticResource ModernTextBox}"
+                   VerticalAlignment="Center"/>
+          <TextBlock Text="RPM" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="14" Foreground="#666"/>
+        </StackPanel>
+        <TextBlock Text="{Binding SpeedError}" Foreground="Red" FontSize="12" Margin="0,4,0,0"/>
+      </StackPanel>
+    </Border>
+    
+    <!-- Control Buttons -->
+    <Border Grid.Row="3" Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+      <StackPanel>
+        <TextBlock Text="Control Actions" Style="{StaticResource LabelText}"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+          <Button AutomationProperties.AutomationId="StartBtn" 
+                  Content="▶ Start" 
+                  Width="100" 
+                  Height="40"
+                  Command="{Binding StartCmd}"
+                  Style="{StaticResource ModernButton}"/>
+          <Button AutomationProperties.AutomationId="StopBtn"  
+                  Content="⏹ Stop"  
+                  Width="100" 
+                  Height="40"
+                  Margin="8,0,0,0" 
+                  Command="{Binding StopCmd}"
+                  Style="{StaticResource ModernButton}"/>
+          <Button AutomationProperties.AutomationId="EStopBtn" 
+                  Content="⚠ E-STOP" 
+                  Width="100" 
+                  Height="40"
+                  Margin="8,0,0,0" 
+                  Command="{Binding EStopCmd}"
+                  Style="{StaticResource DangerButton}"/>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+    
+    <!-- Interlock Banner -->
+    <Border Grid.Row="4" 
+            AutomationProperties.AutomationId="InterlockBanner" 
+            Background="#F44336" 
+            CornerRadius="8" 
+            Padding="16" 
+            Margin="0,0,0,16"
+            Visibility="{Binding InterlockActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <TextBlock Text="⚠" FontSize="20" Foreground="White" Margin="0,0,8,0"/>
+        <TextBlock Text="INTERLOCK ACTIVE - SYSTEM DISABLED" 
+                   Foreground="White" 
+                   FontSize="16" 
+                   FontWeight="Bold"/>
+      </StackPanel>
+    </Border>
+    
+    <!-- Footer -->
+    <TextBlock Grid.Row="5" 
+               Text="Equipment Control System v1.0" 
+               FontSize="12" 
+               Foreground="#999" 
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Bottom"/>
+  </Grid>
+</Window>

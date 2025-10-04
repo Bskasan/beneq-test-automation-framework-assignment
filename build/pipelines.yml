@@ -1,0 +1,22 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  build-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: "9.0.x" }
+      - name: Restore & Build
+        run: |
+          dotnet build src/Control.Core/Control.Core.csproj -c Debug
+          dotnet build src/Control.Api/Control.Api.csproj -c Debug
+          dotnet build src/Control.Wpf/Control.Wpf.csproj -c Debug
+      - name: Unit tests
+        run: dotnet test tests/Control.UnitTests/Control.UnitTests.csproj -c Debug --no-build
+      - name: Component tests
+        run: dotnet test tests/Control.ComponentTests/Control.ComponentTests.csproj -c Debug --no-build
+      - name: Contract tests
+        run: dotnet test tests/Control.ContractTests/Control.ContractTests.csproj -c Debug --no-build
+      - name: WPF UI tests (headed)
+        run: pwsh tests/Control.UiTests.Wpf/run-wpf-tests.ps1
