@@ -4,7 +4,7 @@
 
 This project showcases a **production-ready** equipment control and visualization system with comprehensive testing, monitoring, and modern UI/UX, following enterprise-grade testing patterns and MVVM architecture.
 
-## Prerequisites
+## Prerequisitess
 
 - .NET SDK 9.0
 - Windows (required for WPF UI tests)
